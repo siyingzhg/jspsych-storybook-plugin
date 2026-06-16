@@ -177,9 +177,6 @@ const info = <const>{
         },
       },
     },
-
-
-
   },
   data: {
 
@@ -384,7 +381,7 @@ class StorybookPlugin implements JsPsychPlugin<Info> {
       }
     }
 
-    // Audio playback (placeholder until team implements full trial rendering)
+    // Audio playback
     for (const aud of trial.audio ?? []) {
       const play = () => {
         this.jsPsych.pluginAPI.getAudioPlayer(aud.src).then(player => player.play());
@@ -396,7 +393,6 @@ class StorybookPlugin implements JsPsychPlugin<Info> {
       }
     }
 
-    // Placeholder continue button — team will replace with full image/audio rendering
     const btn = document.createElement('button');
     btn.textContent = 'Continue →';
     btn.style.cssText = `
