@@ -35,7 +35,7 @@
     {
       images: [
         { id: 'bg',    src: 'img/background.jpeg', x_pos: 0,  y_pos: 0,  width: 100, height: 100 },
-        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 35, width: 16,  height: 25  },
+        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 60, width: 16,  height: 25  },
       ],
       audio:      [{ src: 'sound/ready.mp3', time_onset: 0 }],
       highlight:  [],
@@ -44,16 +44,17 @@
     {
       images: [
         { id: 'bg',    src: 'img/background.jpeg', x_pos: 0,  y_pos: 0,  width: 100, height: 100 },
-        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 35, width: 16,  height: 25  },
+        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 60, width: 16,  height: 25  },
       ],
       audio:      [{ src: 'sound/bunny2.mp3', time_onset: 300 }],
       highlight:  [{ image_id: 'bg', time_onset: 300, time_offset: 1500 }],
-      animations: [{ image_id: 'bunny', type: 'loom', duration: 1500, time_onset: 300 }],
+      animations: [{ image_id: 'bunny', type: 'loom',  duration: 1500, time_onset: 300  },
+                   { image_id: 'bunny', type: 'shake', duration: 600,  time_onset: 2000 }],
     },
     {
       images: [
         { id: 'bg',    src: 'img/background.jpeg', x_pos: 0,  y_pos: 0,  width: 100, height: 100 },
-        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 35, width: 16,  height: 25  },
+        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 60, width: 16,  height: 25  },
       ],
       audio:      [{ src: 'sound/bunny1.mp3', time_onset: 0 }],
       highlight:  [],
@@ -63,7 +64,7 @@
     {
       images: [
         { id: 'bg',    src: 'img/background.jpeg', x_pos: 0,  y_pos: 0,  width: 100, height: 100 },
-        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 35, width: 16,  height: 25  },
+        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 60, width: 16,  height: 25  },
       ],
       audio:      [{ src: 'sound/cat.mp3', time_onset: 0 }],
       highlight:  [{ image_id: 'bg', time_onset: 0, time_offset: 2000 }],
@@ -73,7 +74,7 @@
     {
       images: [
         { id: 'bg',    src: 'img/background.jpeg', x_pos: 0,  y_pos: 0,  width: 100, height: 100 },
-        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 35, width: 16,  height: 25  },
+        { id: 'bunny', src: BUNNY_SRC,              x_pos: 42, y_pos: 60, width: 16,  height: 25  },
       ],
       audio:      [{ src: 'sound/chimes.mp3', time_onset: 200 }],
       highlight:  [],
