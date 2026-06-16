@@ -1,22 +1,65 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>jsPsychStorybook Example</title>
-    <script src="https://unpkg.com/jspsych"></script>
-    <!-- Once this plugin package is published, you can load it from a CDN instead:
-<script src="https://unpkg.com/plugin-storybook"></script> -->
-    <script src="../dist/index.browser.min.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/jspsych/css/jspsych.css" />
-  </head>
+<head>
+  <title>plugin-storybook Example</title>
+  <script src="https://unpkg.com/jspsych@8.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <script src="../dist/index.browser.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/jspsych@8.0.0/css/jspsych.css" />
+  <style>
+    .jspsych-content-wrapper { background: #1a1a2e; }
+    .jspsych-content { max-width: 100%; padding: 0; }
+  </style>
+</head>
+<body></body>
+<script>
+  const jsPsych = initJsPsych({
+    on_finish: () => {
+      document.querySelector('.jspsych-content-wrapper').style.background = 'white';
+      jsPsych.data.displayData();
+    }
+  });
 
-  <body></body>
-  <script>
-    const jsPsych = initJsPsych();
+  const TOTAL_PAGES = 5;
 
-    const trial = {
-      type: jsPsychStorybook
-    };
+  const pages = [
+    {
+      images: [{ id: 'bg', src: 'img/background.jpeg', x_pos: 0, y_pos: 0, width: 100, height: 100 }],
+      audio:  [{ src: 'sound/cat.mp3', time_onset: 500 }],
+      highlight: []
+    },
+    {
+      images: [{ id: 'bg', src: 'img/background.jpeg', x_pos: 0, y_pos: 0, width: 100, height: 100 }],
+      audio:  [],
+      highlight: [{ image_id: 'bg', time_onset: 300, time_offset: 1500 }]
+    },
+    {
+      images: [{ id: 'bg', src: 'img/background.jpeg', x_pos: 0, y_pos: 0, width: 100, height: 100 }],
+      audio:  [{ src: 'sound/cat.mp3', time_onset: 0 }],
+      highlight: []
+    },
+    {
+      images: [{ id: 'bg', src: 'img/background.jpeg', x_pos: 0, y_pos: 0, width: 100, height: 100 }],
+      audio:  [],
+      highlight: [{ image_id: 'bg', time_onset: 0, time_offset: 2000 }]
+    },
+    {
+      images: [{ id: 'bg', src: 'img/background.jpeg', x_pos: 0, y_pos: 0, width: 100, height: 100 }],
+      audio:  [{ src: 'sound/cat.mp3', time_onset: 200 }],
+      highlight: []
+    },
+  ];
 
-    jsPsych.run([trial])
-  </script>
+  const timeline = pages.map((page, i) => ({
+    type: jsPsychStorybook,
+    images:    page.images,
+    audio:     page.audio,
+    highlight: page.highlight,
+    show_progress_bar: true,
+    total_pages:       TOTAL_PAGES,
+    pages_completed:   i,
+  }));
+
+  jsPsych.run(timeline);
+</script>
 </html>

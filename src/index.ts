@@ -232,13 +232,20 @@ class StorybookPlugin implements JsPsychPlugin<Info> {
       this.renderProgressBar(display_element, trial.total_pages, trial.pages_completed);
     }
 
-    // data saving
-    var trial_data = {
-      data1: 99, // Make sure this type and name matches the information for data1 in the data object contained within the info const.
-      data2: "hello world!", // Make sure this type and name matches the information for data2 in the data object contained within the info const.
-    };
-    // end trial
-    this.jsPsych.finishTrial(trial_data);
+    // Placeholder continue button — team will replace with full image/audio rendering
+    const btn = document.createElement('button');
+    btn.textContent = 'Continue →';
+    btn.style.cssText = `
+      position: fixed; bottom: 24px; right: 24px;
+      padding: 12px 28px; font-size: 16px; font-family: sans-serif;
+      background: #5865F2; color: white; border: none; border-radius: 8px;
+      cursor: pointer; z-index: 1000;
+    `;
+    btn.addEventListener('click', () => {
+      display_element.innerHTML = '';
+      this.jsPsych.finishTrial({ response: 'continue', rt: 0 });
+    });
+    display_element.appendChild(btn);
   }
 }
 
