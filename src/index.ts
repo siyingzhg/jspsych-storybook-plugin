@@ -26,6 +26,7 @@ const info = <const>{
       default: null,
     },
     
+<<<<<<< HEAD
     instruction: {
       type: ParameterType.STRING,
       default: "Please read the following instructions carefully.",
@@ -73,6 +74,8 @@ const info = <const>{
         }
       }
     },
+=======
+>>>>>>> 5fe53a5 (changed code for storycollection integration)
     /** An array of objects. Each object represents an image that appears on the screen. Each object contains a id, src, clickable, x_pos, y_pos, width, height, time_onset, and time_offset parameter that will be applied to the question. */
     images: {
       type: ParameterType.COMPLEX,
@@ -361,6 +364,7 @@ const info = <const>{
     // for each image in the images array, loop through them, look for any that has a delay (onset time), then set up that time.
     // helper: jspsych.pluginAPI.setTimeout(() => {function that we wanna run is the one that displays the image}, time) to time the presentation of images and audio based on the time_onset parameter for each stimulus in the trial.
     // helper: jspsych.pluginAPI.clearAllTimeouts() to clear any timeouts that have been set when the trial ends. 
+<<<<<<< HEAD
 
 
     
@@ -406,6 +410,9 @@ const info = <const>{
     }
     display_element.appendChild(buttonGroupElement);
 
+=======
+    
+>>>>>>> 5fe53a5 (changed code for storycollection integration)
     // start each clip at its scheduled onset (or immediately if time_onset is 0)
     clips.forEach((clip, i) => {
       const player = this.audioPlayers[i];
@@ -485,6 +492,10 @@ const info = <const>{
     // move on to the next trial
     this.trial_complete(trial_data);
   }
+  /** Stops playback and ends this page early — for use when an embedding plugin needs to swap pages before this one finishes naturally. */
+  public cancel = () => {
+    this.end_trial();
+  };
 }
 
 export default StorybookPlugin;
