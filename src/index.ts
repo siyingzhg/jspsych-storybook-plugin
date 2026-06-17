@@ -97,6 +97,11 @@ const info = <const>{
           type: ParameterType.STRING,
           default: undefined,
         },
+
+        style: {
+          type: ParameterType.STRING,
+          default: '5px solid green'
+        },
         
         /** The time in milliseconds when the image should be highlighted. */
         time_onset : {
@@ -194,7 +199,7 @@ const info = <const>{
     private nClips: number = 0;
     private trialEnded: boolean = false;
     private params!: TrialType<Info>;
-    // private display: HTMLElement;
+    private display: HTMLElement;
     private response: { rt: number | null; button: number | null } = { rt: null, button: null };
     private context: AudioContext | null = null;
     private startTime: number = 0;
@@ -208,6 +213,9 @@ const info = <const>{
       
       // keep a reference to the trial parameters for use in end_trial
       this.params = trial;
+
+      // reference to display_element for use in private methods
+      this.display = display_element;
       
       // set up the audio context
       this.context = this.jsPsych.pluginAPI.audioContext();
@@ -338,7 +346,32 @@ const info = <const>{
     
     return trial_promise;
   }
-  
+
+  private highlight = () => {
+    this.params.highlight?.map((obj: TrialType.highlight) => {
+      // literally have no idea if the typing for obj matters or works, but typescript got mad at me otherwise
+      const img = this.display.querySelector<HTMLImageElement>(`#${obj.image_id}`);
+
+      if (obj.time_onset > 0) {
+        this.jsPsych.pluginAPI.setTimeout(() => {
+          img!.style.border = obj.style
+          if (obj.time_offset > 0) {
+            this.jsPsych.pluginAPI.setTimeout(() => {
+                img!.removeAttribute('style')
+              }, obj.time_offset);
+          };
+        }, obj.time_onset);
+      } else {
+        if (obj.time_offset > 0) {
+          this.jsPsych.pluginAPI.setTimeout(() => {
+              img!.removeAttribute('style')
+            }, obj.time_offset);
+        };
+        img!.style.border = obj.style
+      };
+    });
+  }
+
   // bring a clip to the front: stop whatever is currently playing so only one
   // clip is audible at a time, then start the new one
   private start_clip = (player: AudioPlayerInterface) => {
