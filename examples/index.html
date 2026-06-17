@@ -14,7 +14,22 @@
     const jsPsych = initJsPsych();
 
     const trial = {
-      type: jsPsychStorybook
+      type: jsPsychStorybook, 
+      previous_button: {
+        button_visible: true,
+        button_text: "Previous"
+      }, 
+      replay_button: {
+        button_visible: true,
+        button_text: "Replay"
+      },
+      next_button: {
+        button_visible: true,
+        button_text: "Next"
+      }, 
+      images: [], 
+      highlight: [],
+      audio: []
     };
 
     jsPsych.run([trial])

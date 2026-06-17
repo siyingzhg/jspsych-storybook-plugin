@@ -6,6 +6,49 @@ const info = <const>{
   name: "plugin-storybook",
   version: version,
   parameters: {
+    instruction: {
+      type: ParameterType.STRING,
+      default: "Please read the following instructions carefully.",
+    },
+    previous_button: {
+      type: ParameterType.COMPLEX,
+      nested: {
+        button_text: {
+          type: ParameterType.STRING,
+          default: "Previous",
+        },
+        button_visible: {
+          type: ParameterType.BOOL,
+          default: true,
+        }
+      }
+    },
+    replay_button: {
+      type: ParameterType.COMPLEX,
+      nested: {
+        button_text: {
+          type: ParameterType.STRING,
+          default: "Replay",
+        },
+        button_visible: {
+          type: ParameterType.BOOL,
+          default: true,
+        }
+      }
+    },
+    next_button: {
+      type: ParameterType.COMPLEX,
+      nested: {
+        button_text: {
+          type: ParameterType.STRING,
+          default: "Next",
+        },
+        button_visible: {
+          type: ParameterType.BOOL,
+          default: true,
+        }
+      }
+    },
     /** An array of objects. Each object represents an image that appears on the screen. Each object contains a id, src, clickable, x_pos, y_pos, width, height, time_onset, and time_offset parameter that will be applied to the question. */
     images: {
       type: ParameterType.COMPLEX,
@@ -148,7 +191,7 @@ type Info = typeof info;
  *
  * Animated storybook with audio
  *
- * @author Khuyen Le, Urvi Suwal, Valeria Inojosa,a Aiden Brown, Becky Gilbert, Siying Zhang
+ * @author Khuyen Le, Urvi Suwal, Valeria Inojosa, Aiden Brown, Becky Gilbert, Siying Zhang
  * @see {@link /plugin-storybook/README.md}}
  */
 class StorybookPlugin implements JsPsychPlugin<Info> {
@@ -157,13 +200,54 @@ class StorybookPlugin implements JsPsychPlugin<Info> {
   constructor(private jsPsych: JsPsych) {}
 
   trial(display_element: HTMLElement, trial: TrialType<Info>) {
+    // we want to set up the previous and replay button here
+    // and the next button 
+    // and we can set it so that they can show it or not (by changing the parameters)
+    
+    // Show instructions if there is one
+    if (trial.instruction !== null) {
+      display_element.insertAdjacentHTML("beforeend", trial.instruction);
+    }
+
+    // Display control buttons
+    const buttonGroupElement = document.createElement("div");
+    buttonGroupElement.id = "jspsych-storybook-btngroup";
+    // Make the button group a flex container
+    buttonGroupElement.classList.add("jspsych-btn-group-flex");
+
+    if(trial.previous_button.button_visible) {
+      buttonGroupElement.insertAdjacentHTML("beforeend", `<button class="jspsych-btn">${trial.previous_button.button_text}</button>`);
+      const buttonElement = buttonGroupElement.lastChild as HTMLElement;
+      buttonElement.id = `jspsych-storybook-btn-${trial.previous_button.button_text}`;
+       buttonElement.addEventListener("click", () => {
+        console.log("Previous button clicked");
+      });
+    }
+    if(trial.replay_button.button_visible) {
+      buttonGroupElement.insertAdjacentHTML("beforeend", `<button class="jspsych-btn">${trial.replay_button.button_text}</button>`);
+      const buttonElement = buttonGroupElement.lastChild as HTMLElement;
+      buttonElement.id = `jspsych-storybook-btn-${trial.replay_button.button_text}`;
+      buttonElement.addEventListener("click", () => {
+        console.log("Replay button clicked");
+      });
+    }
+    if(trial.next_button.button_visible) {
+      buttonGroupElement.insertAdjacentHTML("beforeend", `<button class="jspsych-btn">${trial.next_button.button_text}</button>`);
+      const buttonElement = buttonGroupElement.lastChild as HTMLElement;
+      buttonElement.id = `jspsych-storybook-btn-${trial.next_button.button_text}`;
+       buttonElement.addEventListener("click", () => {
+        console.log("Next button clicked");
+      });
+    }
+     display_element.appendChild(buttonGroupElement);
+
     // data saving
     var trial_data = {
       data1: 99, // Make sure this type and name matches the information for data1 in the data object contained within the info const.
       data2: "hello world!", // Make sure this type and name matches the information for data2 in the data object contained within the info const.
     };
     // end trial
-    this.jsPsych.finishTrial(trial_data);
+    //this.jsPsych.finishTrial(trial_data);
   }
 }
 
