@@ -6,6 +6,7 @@
   <script src="https://unpkg.com/@jspsych/plugin-html-button-response@2.0.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <script src="../dist/index.browser.min.js"></script>
+  <script src="../dist/extension-progress.browser.min.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/jspsych@8.0.0/css/jspsych.css" />
   <style>
     .jspsych-content-wrapper { background: #1a1a2e; }
@@ -15,6 +16,9 @@
 <body></body>
 <script>
   const jsPsych = initJsPsych({
+    extensions: [
+      { type: jsPsychExtensionProgress },
+    ],
     on_finish: () => {
       document.querySelector('.jspsych-content-wrapper').style.background = 'white';
       jsPsych.data.displayData();
@@ -89,10 +93,17 @@
     audio:      page.audio,
     highlight:  page.highlight,
     animations: page.animations,
-    show_progress_bar: true,
-    total_pages:       TOTAL_PAGES,
-    pages_completed:   i + 1,
-    ...(i + 1 >= TOTAL_PAGES ? { celebration_sound: 'sound/tada.mp3' } : {}),
+    extensions: [
+      {
+        type: jsPsychExtensionProgress,
+        params: {
+          show_progress_bar: true,
+          total_pages:       TOTAL_PAGES,
+          pages_completed:   i + 1,
+          celebration_sound: i + 1 >= TOTAL_PAGES ? 'sound/tada.mp3' : null,
+        },
+      },
+    ],
   }));
 
   jsPsych.run([start_screen, ...timeline]);
