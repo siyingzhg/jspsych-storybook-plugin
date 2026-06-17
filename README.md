@@ -64,6 +64,11 @@ Confetti requires [canvas-confetti](https://www.npmjs.com/package/canvas-confett
 to be loaded separately (e.g. via CDN `<script>` tag); the extension degrades
 gracefully — no confetti, no error — if it isn't present.
 
+Both extensions respect the OS-level `prefers-reduced-motion: reduce` setting:
+this one skips the star pop-in, the celebration banner's pop-in, and all
+confetti, while still landing on the same end state (filled stars, banner
+visible).
+
 ### `jspsych-extension-animations`
 
 Animates any image in the trial's `images` array, identified by `image_id`,

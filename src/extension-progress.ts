@@ -54,6 +54,13 @@ class StorybookProgressExtension implements JsPsychExtension {
 
   on_load(): void {}
 
+  private prefersReducedMotion(): boolean {
+    return (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
   on_finish(): Record<string, any> {
     const container = this.jsPsych.getDisplayContainerElement();
     container.querySelector('#storybook-progress-bar')?.remove();
@@ -85,6 +92,8 @@ class StorybookProgressExtension implements JsPsychExtension {
       document.head.appendChild(style);
     }
 
+    const reduceMotion = this.prefersReducedMotion();
+
     const bar = document.createElement('div');
     bar.id = 'storybook-progress-bar';
     bar.style.cssText = `
@@ -100,7 +109,7 @@ class StorybookProgressExtension implements JsPsychExtension {
         font-size: 38px; line-height: 1; display: inline-block;
         color: ${i < pagesCompleted ? '#FFD700' : 'transparent'};
         -webkit-text-stroke: 2.5px #FFD700;
-        ${isNew ? 'animation: storybook-star-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;' : ''}
+        ${isNew && !reduceMotion ? 'animation: storybook-star-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;' : ''}
       `;
       bar.appendChild(star);
     }
@@ -111,12 +120,18 @@ class StorybookProgressExtension implements JsPsychExtension {
       const banner = document.createElement('div');
       banner.id = 'storybook-celebration-banner';
       banner.textContent = '⭐  Great job!  ⭐';
-      banner.style.cssText = `
-        position: absolute; top: 68px; left: 50%; white-space: nowrap;
-        font-size: 26px; font-family: Georgia, serif; font-weight: bold;
-        color: #FFD700; z-index: 100; opacity: 0;
-        animation: storybook-celebrate 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
-      `;
+      banner.style.cssText = reduceMotion
+        ? `
+          position: absolute; top: 68px; left: 50%; white-space: nowrap; transform: translateX(-50%);
+          font-size: 26px; font-family: Georgia, serif; font-weight: bold;
+          color: #FFD700; z-index: 100; opacity: 1;
+        `
+        : `
+          position: absolute; top: 68px; left: 50%; white-space: nowrap;
+          font-size: 26px; font-family: Georgia, serif; font-weight: bold;
+          color: #FFD700; z-index: 100; opacity: 0;
+          animation: storybook-celebrate 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+        `;
       container.appendChild(banner);
 
       if (celebrationSound) {
@@ -125,7 +140,7 @@ class StorybookProgressExtension implements JsPsychExtension {
       }
     }
 
-    if (typeof window.confetti !== 'function') return;
+    if (reduceMotion || typeof window.confetti !== 'function') return;
 
     if (pagesCompleted >= totalPages) {
       const deadline = Date.now() + 2500;

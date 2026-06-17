@@ -122,3 +122,59 @@ describe("extension-progress across multiple trials", () => {
     expect(container.querySelectorAll("#storybook-progress-bar").length).toBe(1);
   });
 });
+
+describe("extension-progress with prefers-reduced-motion", () => {
+  const originalMatchMedia = window.matchMedia;
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+  });
+
+  it("renders the celebration banner immediately visible, with no pop-in animation", async () => {
+    window.matchMedia = jest.fn().mockReturnValue({ matches: true }) as any;
+
+    const { jsPsych } = await startTimeline(
+      [
+        {
+          ...baseTrial,
+          extensions: [
+            {
+              type: jsPsychExtensionProgress,
+              params: { show_progress_bar: true, total_pages: 2, pages_completed: 2 },
+            },
+          ],
+        },
+      ],
+      { extensions: [{ type: jsPsychExtensionProgress }] }
+    );
+
+    const banner = jsPsych.getDisplayContainerElement().querySelector(
+      "#storybook-celebration-banner"
+    ) as HTMLElement;
+    expect(banner.style.opacity).toBe("1");
+    expect(banner.style.animation).toBe("");
+  });
+
+  it("renders the newly completed star without the pop animation", async () => {
+    window.matchMedia = jest.fn().mockReturnValue({ matches: true }) as any;
+
+    const { jsPsych } = await startTimeline(
+      [
+        {
+          ...baseTrial,
+          extensions: [
+            {
+              type: jsPsychExtensionProgress,
+              params: { show_progress_bar: true, total_pages: 3, pages_completed: 2 },
+            },
+          ],
+        },
+      ],
+      { extensions: [{ type: jsPsychExtensionProgress }] }
+    );
+
+    const bar = jsPsych.getDisplayContainerElement().querySelector("#storybook-progress-bar");
+    const newStar = bar.children[1] as HTMLElement;
+    expect(newStar.style.animation).toBe("");
+  });
+});

@@ -119,6 +119,28 @@ describe("extension-animations (canvas mode)", () => {
     });
   });
 
+  it("lets a fresh animation override a previous animation's held final state", async () => {
+    const { jsPsych } = await run([
+      withAnimations(
+        [
+          { image_id: "bunny", type: "fadeOut", duration: 800, time_onset: 0 },
+          { image_id: "bunny", type: "fadeIn", duration: 800, time_onset: 900 },
+        ],
+        "canvas"
+      ),
+    ]);
+
+    const extension = jsPsych.extensions["storybook-animations"] as InstanceType<
+      typeof jsPsychExtensionAnimations
+    >;
+
+    jest.advanceTimersByTime(850); // fadeOut finished at 800ms and is holding opacity 0
+    expect(extension.getImageTransform("bunny").opacity).toBe(0);
+
+    jest.advanceTimersByTime(900); // fadeIn started at 900ms, finished by 1700ms; we're now at 1750ms
+    expect(extension.getImageTransform("bunny").opacity).toBe(1);
+  });
+
   it("lets a later animation on the same image fully replace an earlier, still-running one", async () => {
     const { jsPsych } = await run([
       withAnimations(
@@ -169,5 +191,35 @@ describe("extension-animations across multiple trials", () => {
       translateY: 0,
       opacity: 1,
     });
+  });
+});
+
+describe("extension-animations with prefers-reduced-motion", () => {
+  const originalMatchMedia = window.matchMedia;
+
+  afterEach(() => {
+    window.matchMedia = originalMatchMedia;
+  });
+
+  it("jumps straight to the held end state for a fadeOut, with no tween", async () => {
+    window.matchMedia = jest.fn().mockReturnValue({ matches: true }) as any;
+
+    const { displayElement } = await run([
+      withAnimations([{ image_id: "bunny", type: "fadeOut", duration: 800, time_onset: 0 }]),
+    ]);
+
+    const img = displayElement.querySelector('[data-image-id="bunny"]') as HTMLElement;
+    expect(img.style.opacity).toBe("0");
+  });
+
+  it("reverts straight to identity for a non-holding animation type, with no tween", async () => {
+    window.matchMedia = jest.fn().mockReturnValue({ matches: true }) as any;
+
+    const { displayElement } = await run([
+      withAnimations([{ image_id: "bunny", type: "wiggle", duration: 800, time_onset: 0 }]),
+    ]);
+
+    const img = displayElement.querySelector('[data-image-id="bunny"]') as HTMLElement;
+    expect(img.style.transform).toBe("rotate(0deg) scale(1) translate(0px, 0px)");
   });
 });

@@ -166,7 +166,26 @@ class StorybookAnimationsExtension implements JsPsychExtension {
     return this.current.get(image_id) ?? IDENTITY;
   }
 
+  private prefersReducedMotion(): boolean {
+    return (
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    );
+  }
+
   private startAnimation(spec: AnimationSpec): void {
+    if (this.prefersReducedMotion()) {
+      // Skip the motion itself, but still land on whatever end state the animation
+      // would have held (e.g. a fadeOut should still end up transparent).
+      const finalTransform: Transform = { ...IDENTITY, ...computeTransform(spec, 100) };
+      const resolved = HOLDS_FINAL_STATE.includes(spec.type) ? finalTransform : IDENTITY;
+      this.current.set(spec.image_id, resolved);
+      if (this.renderMode === "dom") {
+        this.applyToDom(spec.image_id, resolved);
+      }
+      return;
+    }
+
     this.active.set(spec.image_id, { spec, startTime: performance.now() });
     this.runLoop();
   }
