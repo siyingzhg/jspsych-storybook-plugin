@@ -26,56 +26,6 @@ const info = <const>{
       default: null,
     },
     
-<<<<<<< HEAD
-    instruction: {
-      type: ParameterType.STRING,
-      default: "Please read the following instructions carefully.",
-    },
-
-    previous_button: {
-      type: ParameterType.COMPLEX,
-      default: { button_text: "Previous", button_visible: true },
-      nested: {
-        button_text: {
-          type: ParameterType.STRING,
-          default: "Previous",
-        },
-        button_visible: {
-          type: ParameterType.BOOL,
-          default: true,
-        }
-      }
-    },
-    replay_button: {
-      type: ParameterType.COMPLEX,
-      default: { button_text: "Replay", button_visible: true },
-      nested: {
-        button_text: {
-          type: ParameterType.STRING,
-          default: "Replay",
-        },
-        button_visible: {
-          type: ParameterType.BOOL,
-          default: true,
-        }
-      }
-    },
-    next_button: {
-      type: ParameterType.COMPLEX,
-      default: { button_text: "Next", button_visible: true },
-      nested: {
-        button_text: {
-          type: ParameterType.STRING,
-          default: "Next",
-        },
-        button_visible: {
-          type: ParameterType.BOOL,
-          default: true,
-        }
-      }
-    },
-=======
->>>>>>> 5fe53a5 (changed code for storycollection integration)
     /** An array of objects. Each object represents an image that appears on the screen. Each object contains a id, src, clickable, x_pos, y_pos, width, height, time_onset, and time_offset parameter that will be applied to the question. */
     images: {
       type: ParameterType.COMPLEX,
@@ -282,17 +232,13 @@ const info = <const>{
       this.startTime = this.context.currentTime;
     }
     
-    
-    
     display_element.innerHTML = "";
-
 
     const containerDiv = document.createElement("div");
     containerDiv.id = "jspsych-storybook-background-image";
     containerDiv.style.display = "block";
     containerDiv.style.position = "relative";
     containerDiv.style.overflow = "hidden";
-
 
     if (trial.background_image !== "") {
       if (trial.width === null && trial.height === null) {
@@ -365,50 +311,6 @@ const info = <const>{
 
     }
 
-    // we want to set up the previous and replay button here
-    // and the next button 
-    // and we can set it so that they can show it or not (by changing the parameters)
-    
-    // Show instructions if there is one
-    if (trial.instruction !== null) {
-      display_element.insertAdjacentHTML("beforeend", trial.instruction);
-    }
-    
-    // Display control buttons
-    const buttonGroupElement = document.createElement("div");
-    buttonGroupElement.id = "jspsych-storybook-btngroup";
-    // Make the button group a flex container
-    buttonGroupElement.classList.add("jspsych-btn-group-flex");
-    
-    if(trial.previous_button.button_visible) {
-      buttonGroupElement.insertAdjacentHTML("beforeend", `<button class="jspsych-btn">${trial.previous_button.button_text}</button>`);
-      const buttonElement = buttonGroupElement.lastChild as HTMLElement;
-      buttonElement.id = `jspsych-storybook-btn-${trial.previous_button.button_text}`;
-      buttonElement.addEventListener("click", () => {
-        console.log("Previous button clicked");
-      });
-    }
-    if(trial.replay_button.button_visible) {
-      buttonGroupElement.insertAdjacentHTML("beforeend", `<button class="jspsych-btn">${trial.replay_button.button_text}</button>`);
-      const buttonElement = buttonGroupElement.lastChild as HTMLElement;
-      buttonElement.id = `jspsych-storybook-btn-${trial.replay_button.button_text}`;
-      buttonElement.addEventListener("click", () => {
-        console.log("Replay button clicked");
-      });
-    }
-    if(trial.next_button.button_visible) {
-      buttonGroupElement.insertAdjacentHTML("beforeend", `<button class="jspsych-btn">${trial.next_button.button_text}</button>`);
-      const buttonElement = buttonGroupElement.lastChild as HTMLElement;
-      buttonElement.id = `jspsych-storybook-btn-${trial.next_button.button_text}`;
-      buttonElement.addEventListener("click", () => {
-        console.log("Next button clicked");
-      });
-    }
-    display_element.appendChild(buttonGroupElement);
-
-=======
-    
->>>>>>> 5fe53a5 (changed code for storycollection integration)
     // start each clip at its scheduled onset (or immediately if time_onset is 0)
     clips.forEach((clip, i) => {
       const player = this.audioPlayers[i];
