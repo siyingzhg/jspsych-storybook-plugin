@@ -26,6 +26,7 @@ const info = <const>{
       default: null,
     },
     
+<<<<<<< HEAD
     instruction: {
       type: ParameterType.STRING,
       default: "Please read the following instructions carefully.",
@@ -33,6 +34,7 @@ const info = <const>{
 
     previous_button: {
       type: ParameterType.COMPLEX,
+      default: { button_text: "Previous", button_visible: true },
       nested: {
         button_text: {
           type: ParameterType.STRING,
@@ -46,6 +48,7 @@ const info = <const>{
     },
     replay_button: {
       type: ParameterType.COMPLEX,
+      default: { button_text: "Replay", button_visible: true },
       nested: {
         button_text: {
           type: ParameterType.STRING,
@@ -59,6 +62,7 @@ const info = <const>{
     },
     next_button: {
       type: ParameterType.COMPLEX,
+      default: { button_text: "Next", button_visible: true },
       nested: {
         button_text: {
           type: ParameterType.STRING,
@@ -70,6 +74,8 @@ const info = <const>{
         }
       }
     },
+=======
+>>>>>>> 5fe53a5 (changed code for storycollection integration)
     /** An array of objects. Each object represents an image that appears on the screen. Each object contains a id, src, clickable, x_pos, y_pos, width, height, time_onset, and time_offset parameter that will be applied to the question. */
     images: {
       type: ParameterType.COMPLEX,
@@ -399,7 +405,10 @@ const info = <const>{
       });
     }
     display_element.appendChild(buttonGroupElement);
+
+=======
     
+>>>>>>> 5fe53a5 (changed code for storycollection integration)
     // start each clip at its scheduled onset (or immediately if time_onset is 0)
     clips.forEach((clip, i) => {
       const player = this.audioPlayers[i];
@@ -479,6 +488,10 @@ const info = <const>{
     // move on to the next trial
     this.trial_complete(trial_data);
   }
+  /** Stops playback and ends this page early — for use when an embedding plugin needs to swap pages before this one finishes naturally. */
+  public cancel = () => {
+    this.end_trial();
+  };
 }
 
 export default StorybookPlugin;
