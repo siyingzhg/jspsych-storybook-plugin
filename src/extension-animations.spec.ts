@@ -1,4 +1,4 @@
-import { clickTarget, startTimeline } from "@jspsych/test-utils";
+import { flushPromises, startTimeline } from "@jspsych/test-utils";
 
 import jsPsychStorybook from "./index";
 import jsPsychExtensionAnimations from "./extension-animations";
@@ -9,7 +9,15 @@ const baseTrial = {
   type: jsPsychStorybook,
   audio: [],
   highlight: [],
+  animations: [],
 };
+
+// this test trial has no audio and an image with no duration, so the plugin's
+// own "end after the last image's duration" timer fires on the next tick
+async function advanceToNextTrial() {
+  jest.advanceTimersByTime(0);
+  await flushPromises();
+}
 
 const withAnimations = (animations: any[], render_mode?: "dom" | "canvas") => ({
   ...baseTrial,
@@ -42,6 +50,8 @@ describe("extension-animations (DOM mode)", () => {
       withAnimations([{ image_id: "bunny", type: "bounce", duration: 500, time_onset: 1000 }]),
     ]);
 
+    // the image itself is appended via a 0-delay timer, so give it a tick before querying
+    jest.advanceTimersByTime(0);
     const img = displayElement.querySelector('[data-image-id="bunny"]') as HTMLElement;
     expect(img.style.transform).toBe("");
 
@@ -76,6 +86,7 @@ describe("extension-animations (DOM mode)", () => {
       withAnimations([{ image_id: "bunny", type: "translate", x: 100, y: -50, duration: 800, time_onset: 0 }]),
     ]);
 
+    jest.advanceTimersByTime(0);
     const img = displayElement.querySelector('[data-image-id="bunny"]') as HTMLElement;
 
     jest.advanceTimersByTime(400);
@@ -272,7 +283,7 @@ describe("extension-animations custom (non-built-in) animation types", () => {
 
 describe("extension-animations across multiple trials", () => {
   it("resets animation state between trials, even if the prior trial's animation never finished", async () => {
-    const { jsPsych, displayElement } = await run([
+    const { jsPsych } = await run([
       withAnimations([{ image_id: "bunny", type: "wiggle", duration: 5000, time_onset: 0 }], "canvas"),
       withAnimations([], "canvas"),
     ]);
@@ -284,7 +295,7 @@ describe("extension-animations across multiple trials", () => {
     jest.advanceTimersByTime(200); // trial 1's wiggle is mid-flight, nowhere near its 5000ms duration
     expect(extension.getImageTransform("bunny").rotate).not.toBe(0);
 
-    await clickTarget(displayElement.querySelector("button"));
+    await advanceToNextTrial();
 
     expect(extension.getImageTransform("bunny")).toEqual({
       rotate: 0,
@@ -310,6 +321,7 @@ describe("extension-animations with prefers-reduced-motion", () => {
       withAnimations([{ image_id: "bunny", type: "fadeOut", duration: 800, time_onset: 0 }]),
     ]);
 
+    jest.advanceTimersByTime(20);
     const img = displayElement.querySelector('[data-image-id="bunny"]') as HTMLElement;
     expect(img.style.opacity).toBe("0");
   });
@@ -321,6 +333,7 @@ describe("extension-animations with prefers-reduced-motion", () => {
       withAnimations([{ image_id: "bunny", type: "wiggle", duration: 800, time_onset: 0 }]),
     ]);
 
+    jest.advanceTimersByTime(20);
     const img = displayElement.querySelector('[data-image-id="bunny"]') as HTMLElement;
     expect(img.style.transform).toBe("rotate(0deg) scale(1) translate(0px, 0px)");
   });

@@ -211,7 +211,13 @@ class StorybookAnimationsExtension implements JsPsychExtension {
       const resolved = holdsFinalState(spec) ? finalTransform : IDENTITY;
       this.current.set(spec.image_id, resolved);
       if (this.renderMode === "dom") {
-        this.applyToDom(spec.image_id, resolved);
+        // Some plugins insert their image elements asynchronously (e.g. on a
+        // timer, even with a 0ms delay) rather than synchronously during
+        // rendering, so the element may not exist in the DOM yet at this exact
+        // point. The regular (motion) path tolerates this naturally since it
+        // only starts touching the DOM on the next animation frame; do the
+        // same here instead of writing immediately.
+        requestAnimationFrame(() => this.applyToDom(spec.image_id, resolved));
       }
       return;
     }
