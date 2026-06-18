@@ -211,7 +211,7 @@ const info = <const>{
     private nClips: number = 0;
     private trialEnded: boolean = false;
     private params!: TrialType<Info>;
-    // private display: HTMLElement;
+    private display: HTMLElement;
     private response: { rt: number | null; button: number | null } = { rt: null, button: null };
     private context: AudioContext | null = null;
     private startTime: number = 0;
