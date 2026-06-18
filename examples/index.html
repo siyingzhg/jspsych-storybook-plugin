@@ -30,36 +30,98 @@
 
     // The storybook trial plays each clip in the `audio` array at its
     // `time_onset` (ms). The trial ends after the last clip finishes.
-    const trial = {
+
+    const readytogo = {
       type: jsPsychStorybook,
       background_image: "img/background.jpeg",
-      images: [{ id: "arlo", src: "img/arlo.png", x_pos: 20, y_pos: 20, width: 20, time_onset: 0, duration: 5000 },
-                  { id: "arlo-hi", src: "img/arlo-hi.png", x_pos: 20, y_pos: 20, width: 20, time_onset: 5000, duration: 2000 }],
-      width: 70,
-      highlight: [{
-          image_id: "arlo",
-          style: "5px solid green",
-          time_onset: 1000,
-          duration: 3000
-        }],
-      animations: [{ image_id: "arlo-hi", type: "wiggle", duration: 1000, time_onset: 5200 }],
-
+      images: [],
+      width: 70, 
+      highlight: [],
+      animations: [], 
+    
       // onsets = previous clip's exact end + 2000ms, so every gap is 2s
       // (exact durations in ms: ready 610, chimes 6015, arlo-hi 3251,
       //  sarah-hi 3571, mom-hi 3611, dad-hi 1891)
       audio: [
         { src: "sound/ready.mp3", time_onset: 0 },
-        { src: "sound/chimes.mp3", time_onset: 2610 },
-        { src: "sound/arlo-hi.mp3", time_onset: 10625 },
-        { src: "sound/chimes.mp3", time_onset: 15876 },
-        { src: "sound/sarah-hi.mp3", time_onset: 23891 },
-        { src: "sound/chimes.mp3", time_onset: 29462 },
-        { src: "sound/mom-hi.mp3", time_onset: 37477 },
-        { src: "sound/chimes.mp3", time_onset: 43088 },
-        { src: "sound/dad-hi.mp3", time_onset: 51103 },
       ],
     };
 
-    jsPsych.run([start, trial]);
+    const arlo = {
+      type: jsPsychStorybook,
+      background_image: "img/background.jpeg",
+      images: [{ id: "arlo", src: "img/arlo.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 0, duration: 5000 },
+               { id: "arlo-hi", src: "img/arlo-hi.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 5000 }],
+      width: 70, 
+      highlight: [],
+      animations: [], 
+    
+      // onsets = previous clip's exact end + 2000ms, so every gap is 2s
+      // (exact durations in ms: ready 610, chimes 6015, arlo-hi 3251,
+      //  sarah-hi 3571, mom-hi 3611, dad-hi 1891)
+      audio: [
+        { src: "sound/chimes.mp3", time_onset: 0 },
+        { src: "sound/arlo-hi.mp3", time_onset: 6015 },
+      ],
+    };
+
+    const sarah = {
+      type: jsPsychStorybook,
+      background_image: "img/background.jpeg",
+      images: [{ id: "sarah", src: "img/sarah.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 0, duration: 5000 },
+               { id: "sarah-hi", src: "img/sarah-hi.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 5000 }],
+      width: 70, 
+      highlight: [],
+      animations: [], 
+    
+      // onsets = previous clip's exact end + 2000ms, so every gap is 2s
+      // (exact durations in ms: ready 610, chimes 6015, arlo-hi 3251,
+      //  sarah-hi 3571, mom-hi 3611, dad-hi 1891)
+      audio: [
+        { src: "sound/chimes.mp3", time_onset: 0 },
+        { src: "sound/sarah-hi.mp3", time_onset: 6015 },
+      ],
+    };
+
+    const dad = {
+      type: jsPsychStorybook,
+      background_image: "img/background.jpeg",
+      images: [{ id: "dad", src: "img/dad.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 0, duration: 5000 },
+               { id: "dad-hi", src: "img/dad-hi.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 5000 }],
+      width: 70, 
+      highlight: [],
+      animations: [], 
+    
+      // onsets = previous clip's exact end + 2000ms, so every gap is 2s
+      // (exact durations in ms: ready 610, chimes 6015, arlo-hi 3251,
+      //  sarah-hi 3571, mom-hi 3611, dad-hi 1891)
+      audio: [
+        { src: "sound/chimes.mp3", time_onset: 0 },
+        { src: "sound/dad-hi.mp3", time_onset: 6015 },
+      ],
+    };
+
+    const mom = {
+      type: jsPsychStorybook,
+      background_image: "img/background.jpeg",
+      images: [{ id: "mom", src: "img/mom.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 0, duration: 5000 },
+               { id: "mom-hi", src: "img/mom-hi.png", x_pos: 20, y_pos: 20, width: 60, time_onset: 5000 }],
+      width: 70, 
+      highlight: [],
+      animations: [], 
+    
+      // onsets = previous clip's exact end + 2000ms, so every gap is 2s
+      // (exact durations in ms: ready 610, chimes 6015, arlo-hi 3251,
+      //  sarah-hi 3571, mom-hi 3611, dad-hi 1891)
+      audio: [
+        { src: "sound/chimes.mp3", time_onset: 0 },
+        { src: "sound/mom-hi.mp3", time_onset: 6015 },
+      ],
+    };
+    
+
+    
+
+    jsPsych.run([start, readytogo, arlo, sarah, mom, dad]);
   </script>
 </html>

@@ -51,7 +51,6 @@ const info = <const>{
     images: {
       type: ParameterType.COMPLEX,
       array: true,
-      default: [],
       nested: {
         /** unique ID for this image. This must not have any spaces or special characters. */
         id: {
@@ -113,17 +112,11 @@ const info = <const>{
     highlight: {
       type: ParameterType.COMPLEX,
       array: true,
-      default: [],
       nested: {
         /** The ID of the image to be highlighted. This must match the ID of one of the images in the images array. */
         image_id: {
           type: ParameterType.STRING,
           default: undefined,
-        },
-
-        style: {
-          type: ParameterType.STRING,
-          default: '5px solid green'
         },
         
         /** The time in milliseconds when the image should be highlighted. */
@@ -133,16 +126,16 @@ const info = <const>{
         }, 
         
         /** The time in milliseconds when the image should stop being highlighted. */
-        duration : {
+        time_offset : {
           type: ParameterType.INT,
           default: 0  
         }, 
+        
       }
     },
     
     animations: {
       type: ParameterType.COMPLEX,
-      default: [],
       array: true,
       nested: {
         /** The ID of the image to be animated. This must match the ID of one of the images in the images array. */
@@ -187,15 +180,11 @@ const info = <const>{
     },
     data: {
       
-      /** An object containing the response for each question. The object will have a separate key (variable) for each question, with the first question in the trial being recorded in `Q0`, the second in `Q1`, and so on. The responses are recorded as integers, representing the position selected on the likert scale for that question. If the `name` parameter is defined for the question, then the response object will use the value of `name` as the key for each question. This will be encoded as a JSON string when data is saved using the `.json()` or `.csv()` functions. */
-      response: {
-        type: ParameterType.OBJECT,
-      },
-      
       /** The response time in milliseconds for the participant to make a response. The time is measured from when the questions first appear on the screen until the participant's response(s) are submitted. */
       rt: {
         type: ParameterType.INT,
       },
+      
       
       
     },
@@ -222,11 +211,11 @@ const info = <const>{
     private nClips: number = 0;
     private trialEnded: boolean = false;
     private params!: TrialType<Info>;
-    private display: HTMLElement;
+    // private display: HTMLElement;
     private response: { rt: number | null; button: number | null } = { rt: null, button: null };
     private context: AudioContext | null = null;
     private startTime: number = 0;
-    private trial_complete!: (trial_data: { rt: number | null; response: number | null }) => void;
+    private trial_complete!: (trial_data: Record<string, unknown>) => void;
     
     constructor(private jsPsych: JsPsych) {
       autoBind(this);
@@ -236,9 +225,6 @@ const info = <const>{
       
       // keep a reference to the trial parameters for use in end_trial
       this.params = trial;
-
-      // reference to display_element for use in private methods
-      this.display = display_element;
       
       // set up the audio context
       this.context = this.jsPsych.pluginAPI.audioContext();
@@ -360,14 +346,9 @@ const info = <const>{
       this.trial_complete = resolve;
     });
     
-    // with no audio, end once the last image's display finishes (time_onset + duration);
-    // images with no duration don't have a natural end time, so they don't count here
+    // with no audio there is nothing to wait for, so end immediately
     if (this.nClips === 0) {
-      const lastImageEnd = trial.images.reduce((maxEnd, image) => {
-        if (image.duration === null) return maxEnd;
-        return Math.max(maxEnd, image.time_onset + image.duration);
-      }, 0);
-      this.jsPsych.pluginAPI.setTimeout(() => this.end_trial(), lastImageEnd);
+      this.end_trial();
     }
     
     return trial_promise;
@@ -450,9 +431,10 @@ const info = <const>{
     }
     
     // gather the data to store for the trial
-    var trial_data = {
-      rt: this.response.rt,
-      response: this.response.button,
+    const trial_data = {
+      rt: Math.round(performance.now() - this.startTime),
+      // response: this.response.button,
+      ... this.params, 
     };
     
     // move on to the next trial
