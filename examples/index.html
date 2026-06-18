@@ -7,6 +7,7 @@
     <!-- Once this plugin package is published, you can load it from a CDN instead:
 <script src="https://unpkg.com/plugin-storybook"></script> -->
     <script src="../dist/index.browser.min.js"></script>
+    <script src="../dist/extension-animations.browser.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/jspsych/css/jspsych.css" />
     <!-- <script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@1.1.3"></script> -->
 
@@ -15,6 +16,7 @@
   <body></body>
   <script>
     const jsPsych = initJsPsych({
+      extensions: [{ type: jsPsychExtensionAnimations }],
       on_finish: () => jsPsych.data.displayData(),
     });
 

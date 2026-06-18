@@ -25,7 +25,28 @@ const info = <const>{
       type: ParameterType.INT,
       default: null,
     },
-    
+
+    /**
+     * A manual fallback for ending the trial. Hidden by default, since trials
+     * normally end on their own (audio finishing, or -- with no audio -- the
+     * last image's duration elapsing). Show it for trials that have no audio
+     * and no image durations, since otherwise there's no way to end them.
+     */
+    end_trial_button: {
+      type: ParameterType.COMPLEX,
+      default: { button_visible: false, button_text: "Continue" },
+      nested: {
+        button_visible: {
+          type: ParameterType.BOOL,
+          default: false,
+        },
+        button_text: {
+          type: ParameterType.STRING,
+          default: "Continue",
+        },
+      },
+    },
+
     /** An array of objects. Each object represents an image that appears on the screen. Each object contains a id, src, clickable, x_pos, y_pos, width, height, time_onset, and time_offset parameter that will be applied to the question. */
     images: {
       type: ParameterType.COMPLEX,
@@ -224,7 +245,10 @@ const info = <const>{
     
     // start time
     this.startTime = performance.now();
-    
+    if (this.context !== null) {
+      this.startTime = this.context.currentTime;
+    }
+     
     display_element.innerHTML = "";
 
     const containerDiv = document.createElement("div");
@@ -277,6 +301,7 @@ const info = <const>{
 
     display_element.appendChild(containerDiv);
 
+    
     // overlay images — positioned as % of containerDiv so they scale with it
     for (const image of trial.images) {
       const img = document.createElement("img");
@@ -303,6 +328,8 @@ const info = <const>{
       }
 
     }
+    //set up highlighting
+    this.highlight();   
 
     // start each clip at its scheduled onset (or immediately if time_onset is 0)
     clips.forEach((clip, i) => {
@@ -326,7 +353,36 @@ const info = <const>{
     
     return trial_promise;
   }
-  
+
+  private highlight = () => {
+    this.params.highlight?.map((obj) => {
+      const applyHighlight = () => {
+        const img = this.display.querySelector<HTMLImageElement>(
+          `#jspsych-storybook-image-${obj.image_id}`
+        );
+
+        if (!img) {
+          return;
+        }
+
+        img.style.outline = obj.style;
+
+        if (obj.duration > 0) {
+          this.jsPsych.pluginAPI.setTimeout(() => {
+            img.style.outline = null
+          }, obj.duration);
+        }
+      };
+
+      if (obj.time_onset > 0) {
+        this.jsPsych.pluginAPI.setTimeout(applyHighlight, obj.time_onset);
+      } else {
+        // still defer to give the image a chance to land in the DOM
+        this.jsPsych.pluginAPI.setTimeout(applyHighlight, 0);
+      }
+    });
+  };
+
   // bring a clip to the front: stop whatever is currently playing so only one
   // clip is audible at a time, then start the new one
   private start_clip = (player: AudioPlayerInterface) => {

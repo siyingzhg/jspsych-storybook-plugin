@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>extension-animations — canvas mode demo</title>
+  <script src="https://unpkg.com/jspsych@8.0.0"></script>
+  <script src="../dist/index.browser.min.js"></script>
+  <script src="../dist/extension-animations.browser.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/jspsych@8.0.0/css/jspsych.css" />
+  <style>
+    body { background: #1a1a2e; }
+    #canvas-demo {
+      position: fixed; top: 90px; left: 50%; transform: translateX(-50%);
+      border: 2px solid #5865F2; border-radius: 8px; z-index: 50;
+    }
+    #canvas-label {
+      position: fixed; top: 410px; left: 50%; transform: translateX(-50%);
+      color: #8b8bb0; font-family: sans-serif; font-size: 12px; text-align: center;
+      width: 320px; z-index: 50;
+    }
+    #finish-message {
+      position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%);
+      color: white; font-family: Georgia, serif; font-size: 28px; z-index: 50;
+    }
+  </style>
+</head>
+<body></body>
+<script>
+  const jsPsych = initJsPsych({
+    extensions: [{ type: jsPsychExtensionAnimations }],
+  });
+
+  const BUNNY_SRC = 'https://pixijs.com/assets/bunny.png';
+
+  // This canvas and its draw loop are written by this demo, not by the plugin or the
+  // extension — they stand in for whatever canvas-rendering plugin code the team
+  // eventually writes. The point is to show that 'canvas' mode produces correct,
+  // smooth transforms with zero DOM involvement: nothing here is a <img> element.
+  const CANVAS_SIZE = 320;
+  const BUNNY_DRAW_SCALE = 4; // the source bunny sprite is tiny; scale it up to be visible
+
+  const canvas = document.createElement('canvas');
+  canvas.id = 'canvas-demo';
+  canvas.width = CANVAS_SIZE;
+  canvas.height = CANVAS_SIZE;
+  document.body.appendChild(canvas);
+
+  const label = document.createElement('div');
+  label.id = 'canvas-label';
+  label.textContent = "drawn by this demo's own canvas loop via getImageTransform('bunny')";
+  document.body.appendChild(label);
+
+  const ctx = canvas.getContext('2d');
+  const bunnyImg = new Image();
+  bunnyImg.src = BUNNY_SRC;
+
+  function drawBackground() {
+    const gradient = ctx.createLinearGradient(0, 0, 0, CANVAS_SIZE);
+    gradient.addColorStop(0, '#2d2d4a');
+    gradient.addColorStop(1, '#1a1a2e');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    ctx.fillStyle = '#3a3a5c';
+    ctx.fillRect(0, CANVAS_SIZE - 40, CANVAS_SIZE, 40);
+  }
+
+  let drawing = true;
+  function drawLoop() {
+    if (!drawing) return;
+    drawBackground();
+
+    const animationsExt = jsPsych.extensions['storybook-animations'];
+    const t = animationsExt ? animationsExt.getImageTransform('bunny') : null;
+
+    ctx.save();
+    ctx.translate(CANVAS_SIZE / 2, CANVAS_SIZE - 50);
+    if (t) {
+      ctx.translate(t.translateX, t.translateY);
+      ctx.rotate((t.rotate * Math.PI) / 180);
+      ctx.scale(t.scale, t.scale);
+      ctx.globalAlpha = t.opacity;
+    }
+    ctx.scale(BUNNY_DRAW_SCALE, BUNNY_DRAW_SCALE);
+    if (bunnyImg.complete) {
+      ctx.drawImage(bunnyImg, -bunnyImg.width / 2, -bunnyImg.height);
+    }
+    ctx.restore();
+
+    requestAnimationFrame(drawLoop);
+  }
+  requestAnimationFrame(drawLoop);
+
+  const trial = {
+    type: jsPsychStorybook,
+    images: [],
+    audio: [],
+    highlight: [],
+    extensions: [
+      {
+        type: jsPsychExtensionAnimations,
+        params: {
+          render_mode: 'canvas',
+          animations: [
+            { image_id: 'bunny', type: 'wiggle',    duration: 1000, time_onset: 200 },
+            { image_id: 'bunny', type: 'loom',      duration: 1500, time_onset: 1400 },
+            { image_id: 'bunny', type: 'bounce',    duration: 900,  time_onset: 3100 },
+            { image_id: 'bunny', type: 'translate', x: 80, y: -40, duration: 1200, time_onset: 4200 },
+            { image_id: 'bunny', type: 'shake',     duration: 600,  time_onset: 5700 },
+          ],
+        },
+      },
+    ],
+  };
+
+  jsPsych.run([trial]).then(() => {
+    drawing = false;
+    canvas.remove();
+    label.remove();
+
+    const message = document.createElement('div');
+    message.id = 'finish-message';
+    message.textContent = 'Canvas-mode demo finished.';
+    document.body.appendChild(message);
+  });
+</script>
+</html>
